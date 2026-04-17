@@ -74,6 +74,12 @@ public class Lang implements LangContainer {
     public static final MessageLocale COMMAND_KEY_GIVE_NOTIFY = LangEntry.builder("Command.Key.Give.Notify").chatMessage(
         GRAY.wrap("You recieved " + SOFT_YELLOW.wrap("x" + GENERIC_AMOUNT) + " of " + SOFT_YELLOW.wrap(KEY_NAME) + "!"));
 
+    public static final MessageLocale COMMAND_KEY_GIVE_NOTIFY_TITLE = LangEntry.builder("Command.Key.Give.NotifyTitle").titleMessage(
+        SOFT_YELLOW.wrap(BOLD.wrap("Key Received!")),
+        GRAY.wrap("+" + SOFT_YELLOW.wrap("x" + GENERIC_AMOUNT) + " " + SOFT_YELLOW.wrap(KEY_NAME)),
+        Sound.ENTITY_PLAYER_LEVELUP
+    );
+
     public static final TextLocale COMMAND_KEY_GIVE_ALL_DESC = LangEntry.builder("Command.Key.GiveAll.Desc").text(
         "Give key to all online players.");
 

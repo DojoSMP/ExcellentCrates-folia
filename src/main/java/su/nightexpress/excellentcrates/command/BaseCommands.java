@@ -343,10 +343,7 @@ public class BaseCommands {
             plugin.getKeyManager().giveKey(player, key, amount);
 
             if (!silent) {
-                Lang.COMMAND_KEY_GIVE_NOTIFY.message().send(player, replacer -> replacer
-                    .replace(Placeholders.GENERIC_AMOUNT, amount)
-                    .replace(key.replacePlaceholders())
-                );
+                this.sendKeyGiveNotify(player, key, amount);
             }
         });
 
@@ -398,10 +395,7 @@ public class BaseCommands {
 
             Player target = user.getPlayer();
             if (target != null && !context.hasFlag(CommandFlags.SILENT)) {
-                Lang.COMMAND_KEY_GIVE_NOTIFY.message().send(target, replacer -> replacer
-                    .replace(Placeholders.GENERIC_AMOUNT, amount)
-                    .replace(key.replacePlaceholders())
-                );
+                this.sendKeyGiveNotify(target, key, amount);
             }
 
             if (!context.hasFlag(CommandFlags.SILENT_FEEDBACK)) {
@@ -478,5 +472,16 @@ public class BaseCommands {
             }
         });
         return true;
+    }
+
+    private void sendKeyGiveNotify(@NotNull Player player, @NotNull CrateKey key, int amount) {
+        Lang.COMMAND_KEY_GIVE_NOTIFY.message().send(player, replacer -> replacer
+            .replace(Placeholders.GENERIC_AMOUNT, amount)
+            .replace(key.replacePlaceholders())
+        );
+        Lang.COMMAND_KEY_GIVE_NOTIFY_TITLE.message().send(player, replacer -> replacer
+            .replace(Placeholders.GENERIC_AMOUNT, amount)
+            .replace(key.replacePlaceholders())
+        );
     }
 }
