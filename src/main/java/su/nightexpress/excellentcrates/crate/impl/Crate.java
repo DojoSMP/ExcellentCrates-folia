@@ -34,7 +34,7 @@ import su.nightexpress.excellentcrates.util.pos.WorldPos;
 import su.nightexpress.nightcore.bridge.currency.Currency;
 import su.nightexpress.nightcore.bridge.item.AdaptedItem;
 import su.nightexpress.nightcore.config.FileConfig;
-import su.nightexpress.nightcore.universalscheduler.foliaScheduler.FoliaScheduler;
+import su.nightexpress.nightcore.bridge.paper.scheduler.FoliaScheduler;
 import su.nightexpress.nightcore.integration.currency.EconomyBridge;
 import su.nightexpress.nightcore.manager.ConfigBacked;
 import su.nightexpress.nightcore.util.FileUtil;

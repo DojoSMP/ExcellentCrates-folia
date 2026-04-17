@@ -1,8 +1,17 @@
 package su.nightexpress.excellentcrates.opening;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import su.nightexpress.excellentcrates.CratesPlugin;
 import su.nightexpress.excellentcrates.api.opening.Opening;
 import su.nightexpress.excellentcrates.api.opening.OpeningProvider;
@@ -13,14 +22,10 @@ import su.nightexpress.excellentcrates.crate.cost.Cost;
 import su.nightexpress.excellentcrates.crate.impl.Crate;
 import su.nightexpress.excellentcrates.crate.impl.CrateSource;
 import su.nightexpress.excellentcrates.opening.world.provider.DummyProvider;
+import su.nightexpress.nightcore.bridge.paper.scheduler.FoliaScheduler;
 import su.nightexpress.nightcore.config.FileConfig;
 import su.nightexpress.nightcore.manager.AbstractManager;
-import su.nightexpress.nightcore.universalscheduler.foliaScheduler.FoliaScheduler;
 import su.nightexpress.nightcore.util.FileUtil;
-
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class OpeningManager extends AbstractManager<CratesPlugin> {
 
