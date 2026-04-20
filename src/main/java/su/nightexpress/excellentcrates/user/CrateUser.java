@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public class CrateUser extends AbstractUser {
 
+    private boolean                          rewardBroadcastEnabled;
     private final Map<String, Integer>       keys;
     private final Map<String, Integer>       keysOnHold;
     private final Map<String, UserCrateData> crateDataMap;
@@ -20,7 +21,8 @@ public class CrateUser extends AbstractUser {
         this(uuid, name, System.currentTimeMillis(), System.currentTimeMillis(),
             new HashMap<>(),
             new HashMap<>(),
-            new HashMap<>()
+            new HashMap<>(),
+            true
         );
     }
 
@@ -30,11 +32,21 @@ public class CrateUser extends AbstractUser {
                      long lastOnline,
                      @NotNull Map<String, Integer> keys,
                      @NotNull Map<String, Integer> keysOnHold,
-                     @NotNull Map<String, UserCrateData> crateDataMap) {
+                     @NotNull Map<String, UserCrateData> crateDataMap,
+                     boolean rewardBroadcastEnabled) {
         super(uuid, name, dateCreated, lastOnline);
         this.keys = keys;
         this.keysOnHold = keysOnHold;
         this.crateDataMap = new HashMap<>(crateDataMap);
+        this.rewardBroadcastEnabled = rewardBroadcastEnabled;
+    }
+
+    public boolean isRewardBroadcastEnabled() {
+        return this.rewardBroadcastEnabled;
+    }
+
+    public void setRewardBroadcastEnabled(boolean rewardBroadcastEnabled) {
+        this.rewardBroadcastEnabled = rewardBroadcastEnabled;
     }
 
     @NotNull

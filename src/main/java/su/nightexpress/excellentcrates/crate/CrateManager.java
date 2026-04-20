@@ -651,11 +651,16 @@ public class CrateManager extends AbstractManager<CratesPlugin> {
         globalData.setDirty(true);
 
         if (reward.isBroadcast()) {
-            Lang.CRATE_OPEN_REWARD_BROADCAST.message().broadcast(replacer -> replacer
-                .replace(Placeholders.forPlayerWithPAPI(player))
-                .replace(crate.replacePlaceholders())
-                .replace(reward.replacePlaceholders())
-            );
+            Players.getOnline().forEach(target -> {
+                CrateUser targetUser = this.plugin.getUserManager().getOrFetch(target);
+                if (!targetUser.isRewardBroadcastEnabled()) return;
+
+                Lang.CRATE_OPEN_REWARD_BROADCAST.message().send(target, replacer -> replacer
+                    .replace(Placeholders.forPlayerWithPAPI(player))
+                    .replace(crate.replacePlaceholders())
+                    .replace(reward.replacePlaceholders())
+                );
+            });
         }
 
         this.addRollCount(player, reward);

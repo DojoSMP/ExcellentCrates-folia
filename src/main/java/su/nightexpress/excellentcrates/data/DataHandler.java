@@ -1,20 +1,31 @@
 package su.nightexpress.excellentcrates.data;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import su.nightexpress.excellentcrates.CratesPlugin;
 import su.nightexpress.excellentcrates.api.crate.Reward;
 import su.nightexpress.excellentcrates.crate.impl.Crate;
 import su.nightexpress.excellentcrates.data.crate.GlobalCrateData;
-import su.nightexpress.excellentcrates.data.legacy.LegacyCrateData;
-import su.nightexpress.excellentcrates.data.legacy.LegacyLimitData;
 import su.nightexpress.excellentcrates.data.crate.UserCrateData;
-import su.nightexpress.excellentcrates.data.serialize.UserCrateDataSerializer;
+import su.nightexpress.excellentcrates.data.legacy.LegacyCrateData;
 import su.nightexpress.excellentcrates.data.legacy.LegacyCrateDataSerializer;
+import su.nightexpress.excellentcrates.data.legacy.LegacyLimitData;
 import su.nightexpress.excellentcrates.data.legacy.LegacyLimitDataSerializer;
 import su.nightexpress.excellentcrates.data.reward.RewardData;
+import su.nightexpress.excellentcrates.data.serialize.UserCrateDataSerializer;
 import su.nightexpress.excellentcrates.user.CrateUser;
 import su.nightexpress.nightcore.db.AbstractUserDataManager;
 import su.nightexpress.nightcore.db.sql.column.Column;
@@ -24,16 +35,12 @@ import su.nightexpress.nightcore.db.sql.query.impl.SelectQuery;
 import su.nightexpress.nightcore.db.sql.query.type.ValuedQuery;
 import su.nightexpress.nightcore.util.Lists;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Function;
-
 public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser> {
 
     public static final Column COLUMN_KEYS         = Column.of("keys", ColumnType.STRING);
     public static final Column COLUMN_KEYS_ON_HOLD = Column.of("keysOnHold", ColumnType.STRING);
     public static final Column COLUMN_CRATE_DATA   = Column.of("crateData", ColumnType.STRING);
+    public static final Column COLUMN_REWARD_BROADCAST = Column.of("rewardBroadcast", ColumnType.BOOLEAN);
 
     public static final Column COLUMN_CRATE_ID    = Column.of("crateId", ColumnType.STRING);
     public static final Column COLUMN_REWARD_ID   = Column.of("rewardId", ColumnType.STRING);
@@ -127,8 +134,16 @@ public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser
                 Map<String, Integer> keys = this.gson.fromJson(resultSet.getString(COLUMN_KEYS.getName()), new TypeToken<Map<String, Integer>>() {}.getType());
                 Map<String, Integer> keysOnHold = this.gson.fromJson(resultSet.getString(COLUMN_KEYS_ON_HOLD.getName()), new TypeToken<Map<String, Integer>>() {}.getType());
                 Map<String, UserCrateData> crateDataMap = this.gson.fromJson(resultSet.getString(COLUMN_CRATE_DATA.getName()), new TypeToken<Map<String, UserCrateData>>(){}.getType());
+                boolean rewardBroadcastEnabled = true;
+                try {
+                    rewardBroadcastEnabled = resultSet.getBoolean(COLUMN_REWARD_BROADCAST.getName());
+                    if (resultSet.wasNull()) {
+                        rewardBroadcastEnabled = true;
+                    }
+                }
+                catch (SQLException ignored) {}
 
-                return new CrateUser(uuid, name, dateCreated, lastOnline, keys, keysOnHold, crateDataMap);
+                return new CrateUser(uuid, name, dateCreated, lastOnline, keys, keysOnHold, crateDataMap, rewardBroadcastEnabled);
             }
             catch (SQLException exception) {
                 exception.printStackTrace();
@@ -163,6 +178,10 @@ public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser
     protected void onInitialize() {
         super.onInitialize();
 
+        if (!SQLQueries.hasColumn(this.connector, this.tableUsers, COLUMN_REWARD_BROADCAST)) {
+            this.addColumn(this.tableUsers, COLUMN_REWARD_BROADCAST, "1");
+        }
+
         this.createTable(this.tableCrateData, Lists.newList(
             COLUMN_CRATE_ID,
             COLUMN_LATEST_OPENER_ID,
@@ -184,6 +203,9 @@ public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser
         query.setValue(COLUMN_CRATE_DATA, user -> this.gson.toJson(user.getCrateDataMap()));
         query.setValue(COLUMN_KEYS, user -> this.gson.toJson(user.getKeysMap()));
         query.setValue(COLUMN_KEYS_ON_HOLD, user -> this.gson.toJson(user.getKeysOnHold()));
+        if (SQLQueries.hasColumn(this.connector, this.tableUsers, COLUMN_REWARD_BROADCAST)) {
+            query.setValue(COLUMN_REWARD_BROADCAST, user -> String.valueOf(user.isRewardBroadcastEnabled()));
+        }
     }
 
     @Override
@@ -191,6 +213,9 @@ public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser
         query.column(COLUMN_CRATE_DATA);
         query.column(COLUMN_KEYS);
         query.column(COLUMN_KEYS_ON_HOLD);
+        if (SQLQueries.hasColumn(this.connector, this.tableUsers, COLUMN_REWARD_BROADCAST)) {
+            query.column(COLUMN_REWARD_BROADCAST);
+        }
     }
 
     @Override
@@ -198,6 +223,7 @@ public class DataHandler extends AbstractUserDataManager<CratesPlugin, CrateUser
         columns.add(COLUMN_CRATE_DATA);
         columns.add(COLUMN_KEYS);
         columns.add(COLUMN_KEYS_ON_HOLD);
+        columns.add(COLUMN_REWARD_BROADCAST);
     }
 
     @NotNull

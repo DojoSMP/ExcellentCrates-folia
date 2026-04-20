@@ -2,6 +2,7 @@ package su.nightexpress.excellentcrates.command;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nightexpress.excellentcrates.CratesPlugin;
@@ -13,6 +14,7 @@ import su.nightexpress.excellentcrates.crate.impl.Crate;
 import su.nightexpress.excellentcrates.crate.impl.CrateSource;
 import su.nightexpress.excellentcrates.crate.impl.OpenOptions;
 import su.nightexpress.excellentcrates.key.CrateKey;
+import su.nightexpress.excellentcrates.user.CrateUser;
 import su.nightexpress.nightcore.commands.Arguments;
 import su.nightexpress.nightcore.commands.Commands;
 import su.nightexpress.nightcore.commands.builder.HubNodeBuilder;
@@ -37,6 +39,8 @@ public class BaseCommands {
     }
 
     public void load(@NotNull HubNodeBuilder nodeBuilder) {
+        nodeBuilder.executes((context, arguments) -> this.onRootCommand(context));
+
         nodeBuilder.branch(Commands.literal("reload")
             .description(CoreLang.COMMAND_RELOAD_DESC)
             .permission(Perms.COMMAND_RELOAD)
@@ -164,6 +168,16 @@ public class BaseCommands {
             )
             .executes(this::resetCrateCooldown)
         );
+
+        nodeBuilder.branch(Commands.hub("toggle")
+            .description(Lang.COMMAND_TOGGLE_DESC)
+            .branch(Commands.literal("broadcast")
+                .description(Lang.COMMAND_TOGGLE_BROADCAST_DESC)
+                .permission(Perms.COMMAND_TOGGLE_BROADCAST)
+                .playerOnly()
+                .executes(this::toggleBroadcast)
+            )
+        );
     }
 
     @NotNull
@@ -184,6 +198,28 @@ public class BaseCommands {
                 Arguments.integer(CommandArguments.AMOUNT, 1).localized(CoreLang.COMMAND_ARGUMENT_NAME_AMOUNT).suggestions((reader, context) -> Lists.newList("1", "5", "10")).optional()
             )
             .withFlags(CommandFlags.SILENT, CommandFlags.SILENT_FEEDBACK);
+    }
+
+    private boolean onRootCommand(@NotNull CommandContext context) {
+        return !this.hasAnyCommandPermission(context.getSender());
+    }
+
+    private boolean hasAnyCommandPermission(@NotNull CommandSender sender) {
+        return sender.hasPermission(Perms.COMMAND) ||
+            sender.hasPermission(Perms.COMMAND_RELOAD) ||
+            sender.hasPermission(Perms.COMMAND_EDITOR) ||
+            sender.hasPermission(Perms.COMMAND_DROP) ||
+            sender.hasPermission(Perms.COMMAND_DROP_KEY) ||
+            sender.hasPermission(Perms.COMMAND_OPEN) ||
+            sender.hasPermission(Perms.COMMAND_OPEN_FOR) ||
+            sender.hasPermission(Perms.COMMAND_GIVE) ||
+            sender.hasPermission(Perms.COMMAND_KEY) ||
+            sender.hasPermission(Perms.COMMAND_KEY_GIVE) ||
+            sender.hasPermission(Perms.COMMAND_KEY_SET) ||
+            sender.hasPermission(Perms.COMMAND_KEY_TAKE) ||
+            sender.hasPermission(Perms.COMMAND_KEY_INSPECT) ||
+            sender.hasPermission(Perms.COMMAND_PREVIEW) ||
+            sender.hasPermission(Perms.COMMAND_RESETCOOLDOWN);
     }
 
     private boolean dropCrate(@NotNull CommandContext context, @NotNull ParsedArguments arguments) {
@@ -305,6 +341,18 @@ public class BaseCommands {
                 .replace(crate.replacePlaceholders())
             );
         });
+        return true;
+    }
+
+    private boolean toggleBroadcast(@NotNull CommandContext context, @NotNull ParsedArguments arguments) {
+        Player player = context.getPlayerOrThrow();
+        CrateUser user = plugin.getUserManager().getOrFetch(player);
+
+        boolean state = !user.isRewardBroadcastEnabled();
+        user.setRewardBroadcastEnabled(state);
+        plugin.getUserManager().save(user);
+
+        (state ? Lang.COMMAND_TOGGLE_BROADCAST_ENABLED : Lang.COMMAND_TOGGLE_BROADCAST_DISABLED).message().send(player);
         return true;
     }
 

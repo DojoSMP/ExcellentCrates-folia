@@ -37,6 +37,7 @@ public class Placeholders extends su.nightexpress.nightcore.util.Placeholders {
     public static final String GENERIC_INSPECTION = "%inspection%";
     public static final String GENERIC_COOLDOWN   = "%cooldown%";
     public static final String GENERIC_LIMITS     = "%limits%";
+    public static final String BROADCAST_STATE    = "%broadcast_state%";
 
     public static final String RARITY_ID          = "%rarity_id%";
     public static final String RARITY_NAME        = "%rarity_name%";

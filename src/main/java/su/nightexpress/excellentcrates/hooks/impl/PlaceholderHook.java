@@ -155,6 +155,13 @@ public class PlaceholderHook {
 
         @Override
         public String onPlaceholderRequest(@Nullable Player player, @NotNull String params) {
+            if (params.equalsIgnoreCase("broadcast_state")) {
+                if (player == null) return null;
+
+                CrateUser user = plugin.getUserManager().getOrFetch(player);
+                return String.valueOf(user.isRewardBroadcastEnabled());
+            }
+
             for (var entry : this.userPlaceholders.entrySet()) {
                 String prefix = entry.getKey() + "_";
                 if (!params.startsWith(prefix)) continue;

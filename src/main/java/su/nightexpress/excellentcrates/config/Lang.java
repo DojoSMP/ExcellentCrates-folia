@@ -43,6 +43,8 @@ public class Lang implements LangContainer {
     public static final TextLocale COMMAND_PREVIEW_DESC        = LangEntry.builder("Command.Preview.Desc").text("Open crate preview.");
     public static final TextLocale COMMAND_RESET_COOLDOWN_DESC = LangEntry.builder("Command.ResetCooldown.Desc").text("Reset player's crate open cooldown.");
     public static final TextLocale COMMAND_MENU_DESC           = LangEntry.builder("Command.Menu.Desc").text("Open crate menu.");
+    public static final TextLocale COMMAND_TOGGLE_DESC         = LangEntry.builder("Command.Toggle.Desc").text("Toggle personal crate settings.");
+    public static final TextLocale COMMAND_TOGGLE_BROADCAST_DESC = LangEntry.builder("Command.Toggle.Broadcast.Desc").text("Toggle crate reward broadcast messages.");
 
     public static final MessageLocale COMMAND_DROP_DONE = LangEntry.builder("Command.Drop.Done").chatMessage(
         GRAY.wrap("Dropped " + SOFT_YELLOW.wrap(CRATE_NAME) + " at " + SOFT_YELLOW.wrap(LOCATION_X + ", " + LOCATION_Y + ", " + LOCATION_Z) + " in " + SOFT_YELLOW.wrap(LOCATION_WORLD) + "."));
@@ -120,6 +122,12 @@ public class Lang implements LangContainer {
 
     public static final MessageLocale COMMAND_MENU_DONE_OTHERS = LangEntry.builder("Command.Menu.Done.Others").chatMessage(
         GRAY.wrap("Opened crates menu for " + SOFT_YELLOW.wrap(PLAYER_DISPLAY_NAME) + "."));
+
+    public static final MessageLocale COMMAND_TOGGLE_BROADCAST_ENABLED = LangEntry.builder("Command.Toggle.Broadcast.Enabled").chatMessage(
+        GRAY.wrap("ตอนนี้คุณจะได้รับการแจ้งเตือนเมื่อมีคนเปิดกล่องสุ่มแล้ว!"));
+
+    public static final MessageLocale COMMAND_TOGGLE_BROADCAST_DISABLED = LangEntry.builder("Command.Toggle.Broadcast.Disabled").chatMessage(
+        GRAY.wrap("คุณจะไม่ได้รับการแจ้งเตือนเมื่อมีคนเปิดกล่องสุ่มอีกต่อไป!"));
 
 
 
