@@ -34,7 +34,7 @@ public class DataManager extends AbstractManager<CratesPlugin> {
 
     @Override
     protected void onLoad() {
-        this.plugin.runTaskAsync(() -> this.loadData());
+        this.plugin.runTaskAsync(this::loadData);
 
         this.addAsyncTask(this::saveCrateDatas, Config.DATA_CRATE_DATA_SAVE_INTERVAL.get());
         this.addAsyncTask(this::saveRewardLimits, Config.DATA_REWARD_LIMITS_SAVE_INTERVAL.get());
