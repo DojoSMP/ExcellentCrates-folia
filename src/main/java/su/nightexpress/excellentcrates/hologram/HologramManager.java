@@ -1,17 +1,11 @@
 package su.nightexpress.excellentcrates.hologram;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import su.nightexpress.excellentcrates.CratesPlugin;
 import su.nightexpress.excellentcrates.config.Config;
 import su.nightexpress.excellentcrates.crate.impl.Crate;
@@ -24,11 +18,12 @@ import su.nightexpress.excellentcrates.hologram.listener.HologramListener;
 import su.nightexpress.excellentcrates.hooks.HookId;
 import su.nightexpress.excellentcrates.util.CrateUtils;
 import su.nightexpress.excellentcrates.util.pos.WorldPos;
-import su.nightexpress.nightcore.bridge.paper.scheduler.FoliaScheduler;
 import su.nightexpress.nightcore.manager.AbstractManager;
 import su.nightexpress.nightcore.util.LocationUtil;
 import su.nightexpress.nightcore.util.Plugins;
 import su.nightexpress.nightcore.util.placeholder.Replacer;
+
+import java.util.*;
 
 public class HologramManager extends AbstractManager<CratesPlugin> {
 
@@ -161,7 +156,7 @@ public class HologramManager extends AbstractManager<CratesPlugin> {
             Location location = blockPosition.toLocation();
             if (location == null) continue;
 
-            new FoliaScheduler(this.plugin).runTask(location, () -> {
+            this.plugin.runTask(location, () -> {
                 World world = blockPosition.getWorld();
                 if (!blockPosition.isChunkLoaded() || world == null) {
                     this.discard(group); // Remove all viewers and send entity destroy packet.
@@ -215,7 +210,7 @@ public class HologramManager extends AbstractManager<CratesPlugin> {
             Location loc = blockPos.toLocation();
             if (loc == null) continue;
 
-            new FoliaScheduler(this.plugin).runTask(loc, () -> {
+            this.plugin.runTask(loc, () -> {
                 Block block = blockPos.toBlock();
                 if (block == null) return;
 
